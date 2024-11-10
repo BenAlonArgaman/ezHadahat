@@ -30,17 +30,14 @@ export const columns: ColumnDef<ProductColumns>[] = [
         </Button>
       );
     },
-    align: "right", // Add alignment property
   },
   {
     accessorKey: "price",
     header: "מחיר",
-    align: "right",
   },
   {
     accessorKey: "isFeatured",
     header: "פופולרי",
-    align: "center",
     cell: ({ row }) => (
       <div className="flex items-center justify-center">
         {row.original.isFeatured ? (
@@ -60,7 +57,6 @@ export const columns: ColumnDef<ProductColumns>[] = [
   {
     accessorKey: "isArchived",
     header: "מלאי",
-    align: "center",
     cell: ({ row }) => (
       <div className="flex items-center justify-center">
         {row.original.isArchived ? (
@@ -80,7 +76,6 @@ export const columns: ColumnDef<ProductColumns>[] = [
   {
     accessorKey: "category",
     header: "קטגוריה",
-    align: "right",
   },
   {
     accessorKey: "createdAt",
@@ -95,11 +90,9 @@ export const columns: ColumnDef<ProductColumns>[] = [
         </Button>
       );
     },
-    align: "right",
   },
   {
     id: "actions",
-    align: "center",
     cell: ({ row }) => <CellAction data={row.original} />,
   },
 ];
