@@ -12,7 +12,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Multi-Store Admin Portal",
+  title: "פאנל ניהולי | עץ הדעת",
   description: "Manage your store on a single place",
 };
 

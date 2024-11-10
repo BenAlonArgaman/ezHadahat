@@ -22,10 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { Separator } from "@/components/ui/separator";
-
-import { Category, Cuisine, Kitchen, Product, Size } from "@/types-db";
+import { Category, Product } from "@/types-db";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { Trash } from "lucide-react";
@@ -38,9 +36,6 @@ import { z } from "zod";
 interface ProductFormProps {
   initialData: Product;
   categories: Category[];
-  sizes: Size[];
-  kitchens: Kitchen[];
-  cuisines: Cuisine[];
 }
 
 const formSchema = z.object({
@@ -50,18 +45,9 @@ const formSchema = z.object({
   isFeatured: z.boolean().default(false).optional(),
   isArchived: z.boolean().default(false).optional(),
   category: z.string().min(1),
-  size: z.string().optional(),
-  kitchen: z.string().optional(),
-  cuisine: z.string().optional(),
 });
 
-export const ProductForm = ({
-  initialData,
-  categories,
-  sizes,
-  kitchens,
-  cuisines,
-}: ProductFormProps) => {
+export const ProductForm = ({ initialData, categories }: ProductFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
@@ -71,9 +57,6 @@ export const ProductForm = ({
       isFeatured: false,
       isArchived: false,
       category: "",
-      size: "",
-      kitchen: "",
-      cuisine: "",
     },
   });
 
@@ -82,16 +65,14 @@ export const ProductForm = ({
   const params = useParams();
   const router = useRouter();
 
-  const title = initialData ? "Edit product" : "Create product";
-  const description = initialData ? "Edit a product" : "Add a new product";
-  const toastMessage = initialData ? "product Updated" : "product Created";
-  const action = initialData ? "Save Changes" : "Create product";
+  const title = initialData ? "ערוך מוצר" : "צור מוצר חדש";
+  const description = initialData ? "ערוך מוצר קיים" : "הוסף מוצר חדש";
+  const toastMessage = initialData ? "המוצר עודכן" : "המוצר נוצר";
+  const action = initialData ? "שמור שינויים" : "צור מוצר";
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setIsLoading(true);
-      console.log(data);
-
       if (initialData) {
         await axios.patch(
           `/api/${params.storeId}/products/${params.productId}`,
@@ -103,7 +84,7 @@ export const ProductForm = ({
       toast.success(toastMessage);
       router.push(`/${params.storeId}/products`);
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("משהו השתבש");
     } finally {
       router.refresh();
       setIsLoading(false);
@@ -113,15 +94,12 @@ export const ProductForm = ({
   const onDelete = async () => {
     try {
       setIsLoading(true);
-
       await axios.delete(`/api/${params.storeId}/products/${params.productId}`);
-
-      toast.success("product Removed");
-      // router.refresh();
+      toast.success("המוצר הוסר");
       location.reload();
       router.push(`/${params.storeId}/products`);
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("משהו השתבש");
     } finally {
       setIsLoading(false);
       setOpen(false);
@@ -129,41 +107,42 @@ export const ProductForm = ({
   };
 
   return (
-    <>
+    <div dir="rtl" className="w-full px-4 md:px-8">
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
         onConfirm={onDelete}
         loading={isLoading}
       />
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-between mb-4">
         <Heading title={title} description={description} />
         {initialData && (
           <Button
             disabled={isLoading}
-            variant={"destructive"}
-            size={"icon"}
+            variant="destructive"
+            size="icon"
             onClick={() => setOpen(true)}
+            className="mr-4"
           >
             <Trash className="h-4 w-4" />
           </Button>
         )}
       </div>
 
-      <Separator />
+      <Separator className="my-4" />
 
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full space-y-8"
         >
-          {/* images */}
+          {/* תמונות */}
           <FormField
             control={form.control}
             name="images"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Billboard Image</FormLabel>
+                <FormLabel>תמונות המוצר</FormLabel>
                 <FormControl>
                   <ImagesUpload
                     value={field.value.map((image) => image.url)}
@@ -181,36 +160,20 @@ export const ProductForm = ({
             )}
           />
 
-          <div className="grid grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+            {/* שם */}
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>שם</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isLoading}
-                      placeholder="Product name..."
+                      placeholder="שם המוצר..."
                       {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Value</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      disabled={isLoading}
-                      placeholder="0"
-                      {...field}
+                      className="text-right"
                     />
                   </FormControl>
                   <FormMessage />
@@ -218,12 +181,34 @@ export const ProductForm = ({
               )}
             />
 
+            {/* מחיר */}
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>מחיר</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      disabled={isLoading}
+                      placeholder="0"
+                      {...field}
+                      className="text-right"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* קטגוריה */}
             <FormField
               control={form.control}
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>קטגוריה</FormLabel>
                   <Select
                     disabled={isLoading}
                     onValueChange={field.onChange}
@@ -231,17 +216,20 @@ export const ProductForm = ({
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="text-right">
                         <SelectValue
                           defaultValue={field.value}
-                          placeholder="Select a category"
+                          placeholder="בחר קטגוריה"
                         />
                       </SelectTrigger>
                     </FormControl>
-
                     <SelectContent>
                       {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.name}>
+                        <SelectItem
+                          key={category.id}
+                          value={category.name}
+                          className="text-right"
+                        >
                           {category.name}
                         </SelectItem>
                       ))}
@@ -251,110 +239,18 @@ export const ProductForm = ({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="size"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Size</FormLabel>
-                  <Select
-                    disabled={isLoading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a size"
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-
-                    <SelectContent>
-                      {sizes.map((size) => (
-                        <SelectItem key={size.id} value={size.name}>
-                          {size.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="kitchen"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Kitchen</FormLabel>
-                  <Select
-                    disabled={isLoading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a kitchen"
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-
-                    <SelectContent>
-                      {kitchens.map((kitchen) => (
-                        <SelectItem key={kitchen.id} value={kitchen.name}>
-                          {kitchen.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="cuisine"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cuisine</FormLabel>
-                  <Select
-                    disabled={isLoading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a cuisine"
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-
-                    <SelectContent>
-                      {cuisines.map((cuisine) => (
-                        <SelectItem key={cuisine.id} value={cuisine.name}>
-                          {cuisine.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-
+            {/* מוצר מומלץ */}
             <FormField
               control={form.control}
               name="isFeatured"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3">
+                <FormItem className="flex justify-between items-start gap-3 rounded-md border p-4">
+                  <div className="space-y-1 text-right">
+                    <FormLabel>מוצר מומלץ</FormLabel>
+                    <FormDescription>
+                      מוצר זה יופיע במסך הבית תחת מוצרים מומלצים
+                    </FormDescription>
+                  </div>
                   <FormControl>
                     <Checkbox
                       checked={field.value}
@@ -362,22 +258,22 @@ export const ProductForm = ({
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>Featured</FormLabel>
-                    <FormDescription>
-                      This product will be on home screen under featured
-                      products
-                    </FormDescription>
-                  </div>
                 </FormItem>
               )}
             />
 
+            {/* מוצר בארכיון */}
             <FormField
               control={form.control}
               name="isArchived"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3">
+                <FormItem className="flex justify-between items-start gap-3 rounded-md border p-4">
+                  <div className="space-y-1 text-right">
+                    <FormLabel>בארכיון</FormLabel>
+                    <FormDescription>
+                      מוצר זה לא יוצג בשום מקום בחנות
+                    </FormDescription>
+                  </div>
                   <FormControl>
                     <Checkbox
                       checked={field.value}
@@ -385,23 +281,18 @@ export const ProductForm = ({
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>Archived</FormLabel>
-                    <FormDescription>
-                      This product will not be displayed anywhere inside the
-                      store
-                    </FormDescription>
-                  </div>
                 </FormItem>
               )}
             />
           </div>
 
-          <Button disabled={isLoading} type="submit" size={"sm"}>
-            Save Changes
-          </Button>
+          <div className="flex justify-start">
+            <Button disabled={isLoading} type="submit" size="sm">
+              {action}
+            </Button>
+          </div>
         </form>
       </Form>
-    </>
+    </div>
   );
 };

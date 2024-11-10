@@ -11,7 +11,7 @@ import {
 // });
 
 export default authMiddleware({
-  publicRoutes: ["/api/:path*"],
+  publicRoutes: ["/api/:path*", "/api/sT4OusqKVpGNcN1LBuyy/products"],
 });
 
 export const config = {

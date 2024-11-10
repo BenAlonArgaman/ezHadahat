@@ -21,12 +21,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useOrigin } from "@/hooks/use-origin";
 import { storage } from "@/lib/firebase";
 import { Billboards, Category } from "@/types-db";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { deleteObject, ref } from "firebase/storage";
 import { Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -58,10 +56,10 @@ export const CategoryForm = ({
   const params = useParams();
   const router = useRouter();
 
-  const title = initialData ? "Edit Category" : "Create Category";
-  const description = initialData ? "Edit a category" : "Add a new category";
-  const toastMessage = initialData ? "Category Updated" : "Category Created";
-  const action = initialData ? "Save Changes" : "Create category";
+  const title = initialData ? "ערוך קטגוריה" : "צור קטגוריה חדשה";
+  const description = initialData ? "ערוך קטגוריה קיימת" : "הוסף קטגוריה חדשה";
+  const toastMessage = initialData ? "הקטגוריה עודכנה" : "הקטגוריה נוצרה";
+  const action = initialData ? "שמור שינויים" : "צור קטגוריה";
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
@@ -89,7 +87,7 @@ export const CategoryForm = ({
       toast.success(toastMessage);
       router.push(`/${params.storeId}/categories`);
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("משהו השתבש");
     } finally {
       router.refresh();
       setIsLoading(false);
@@ -99,16 +97,14 @@ export const CategoryForm = ({
   const onDelete = async () => {
     try {
       setIsLoading(true);
-
       await axios.delete(
         `/api/${params.storeId}/categories/${params.categoryId}`
       );
-
-      toast.success("Category Removed");
+      toast.success("הקטגוריה הוסרה");
       router.refresh();
       router.push(`/${params.storeId}/categories`);
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("משהו השתבש");
     } finally {
       setIsLoading(false);
       setOpen(false);
@@ -116,49 +112,51 @@ export const CategoryForm = ({
   };
 
   return (
-    <>
+    <div dir="rtl" className="w-full px-4 md:px-8">
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
         onConfirm={onDelete}
         loading={isLoading}
       />
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-between mb-4">
         <Heading title={title} description={description} />
         {initialData && (
           <Button
             disabled={isLoading}
-            variant={"destructive"}
-            size={"icon"}
+            variant="destructive"
+            size="icon"
             onClick={() => setOpen(true)}
+            className="mr-4"
           >
             <Trash className="h-4 w-4" />
           </Button>
         )}
       </div>
 
-      <Separator />
+      <Separator className="my-4" />
 
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full space-y-8"
         >
-          <div className="grid grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel className="text-right">שם</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isLoading}
-                      placeholder="Your category name..."
+                      placeholder="שם הקטגוריה שלך..."
                       {...field}
+                      className="text-right"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-right" />
                 </FormItem>
               )}
             />
@@ -168,7 +166,7 @@ export const CategoryForm = ({
               name="billboardId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Billboard</FormLabel>
+                  <FormLabel className="text-right">שלט</FormLabel>
                   <FormControl>
                     <Select
                       disabled={isLoading}
@@ -177,33 +175,40 @@ export const CategoryForm = ({
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="text-right">
                           <SelectValue
                             defaultValue={field.value}
-                            placeholder="Select a billboard"
+                            placeholder="בחר שלט"
                           />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {billboards.map((billboard) => (
-                          <SelectItem key={billboard.id} value={billboard.id}>
+                          <SelectItem
+                            style={{ direction: "rtl" }}
+                            key={billboard.id}
+                            value={billboard.id}
+                            className="text-right"
+                          >
                             {billboard.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-right" />
                 </FormItem>
               )}
             />
           </div>
 
-          <Button disabled={isLoading} type="submit" size={"sm"}>
-            Save Changes
-          </Button>
+          <div className="flex justify-start">
+            <Button disabled={isLoading} type="submit" size="sm">
+              {action}
+            </Button>
+          </div>
         </form>
       </Form>
-    </>
+    </div>
   );
 };

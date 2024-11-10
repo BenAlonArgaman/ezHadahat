@@ -1,6 +1,4 @@
-import Stripe from "stripe";
 import { NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
 import { db } from "@/lib/firebase";
 import { Product } from "@/types-db";
 import {
@@ -25,62 +23,69 @@ export const POST = async (
   req: Request,
   { params }: { params: { storeId: string } }
 ) => {
-  const { products, userId } = await req.json();
+  try {
+    const { products, userId, phone, address } = await req.json();
 
-  const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+    // Calculate total order amount
+    const totalAmount = products.reduce((sum: number, item: Product) => {
+      return sum + item.price * (item.qty || 1);
+    }, 0);
 
-  products.forEach((item: Product) => {
-    line_items.push({
-      quantity: item.qty,
-      price_data: {
-        currency: "USD",
-        product_data: {
-          name: item.name,
-        },
-        unit_amount: Math.round(item.price * 100),
-      },
+    // Create order data
+    const orderData = {
+      isPaid: false, // Set to true since we're skipping payment
+      orderItems: products,
+      phone,
+      address,
+      userId,
+      order_status: "Processing", // Changed from "Processing" to "Confirmed"
+      totalAmount,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    };
+
+    // Add the order to Firestore
+    const orderRef = await addDoc(
+      collection(db, "stores", params.storeId, "orders"),
+      orderData
+    );
+
+    // Update the document with its ID
+    const id = orderRef.id;
+    await updateDoc(doc(db, "stores", params.storeId, "orders", id), {
+      ...orderData,
+      id,
     });
-  });
 
-  //   add the document to firstore
-  const orderData = {
-    isPaid: false,
-    orderItems: products,
-    userId,
-    order_status: "Processing",
-    createdAt: serverTimestamp(),
-  };
-
-  const orderRef = await addDoc(
-    collection(db, "stores", params.storeId, "orders"),
-    orderData
-  );
-
-  const id = orderRef.id;
-
-  await updateDoc(doc(db, "stores", params.storeId, "orders", id), {
-    ...orderData,
-    id,
-    updatedAt: serverTimestamp(),
-  });
-
-  const session = await stripe.checkout.sessions.create({
-    line_items,
-    mode: "payment",
-    billing_address_collection: "required",
-    shipping_address_collection: {
-      allowed_countries: ["US", "CA", "GB", "AU", "IN"],
-    },
-    phone_number_collection: {
-      enabled: true,
-    },
-    success_url: `${process.env.FRONTEND_STORE_URL}/cart?success=1`,
-    cancel_url: `${process.env.FRONTEND_STORE_URL}/cart?canceld=1`,
-    metadata: {
-      orderId: id,
-      storeId: params.storeId,
-    },
-  });
-
-  return NextResponse.json({ url: session.url }, { headers: corsHeaders });
+    // Return success response with order details
+    return NextResponse.json(
+      {
+        success: true,
+        orderId: id,
+        message: "Order created successfully",
+        orderDetails: {
+          id,
+          ...orderData,
+          createdAt: new Date().toISOString(), // Convert timestamp for response
+          updatedAt: new Date().toISOString(),
+        },
+      },
+      {
+        headers: corsHeaders,
+        status: 201,
+      }
+    );
+  } catch (error) {
+    console.error("[ORDER_ERROR]", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Something went wrong.",
+      },
+      {
+        headers: corsHeaders,
+        status: 500,
+      }
+    );
+  }
 };

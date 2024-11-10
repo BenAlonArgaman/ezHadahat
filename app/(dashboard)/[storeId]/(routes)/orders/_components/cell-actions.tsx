@@ -9,9 +9,10 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Copy, Edit, MoreVertical, Trash } from "lucide-react";
+import { Copy, Edit, MoreVertical, Trash, CreditCard } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { AlertModal } from "@/components/modal/alert-modal";
@@ -23,26 +24,23 @@ interface CellActionProps {
 export const CellAction = ({ data }: CellActionProps) => {
   const router = useRouter();
   const params = useParams();
-
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
   const onCopy = (id: string) => {
     navigator.clipboard.writeText(id);
-    toast.success("Order id copied to clipboard");
+    toast.success("מספר ההזמנה הועתק");
   };
 
   const onDelete = async () => {
     try {
       setIsLoading(true);
-
       await axios.delete(`/api/${params.storeId}/orders/${data.id}`);
-
-      toast.success("Order Removed");
+      toast.success("ההזמנה נמחקה");
       location.reload();
       router.push(`/${params.storeId}/orders`);
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("משהו השתבש");
     } finally {
       setIsLoading(false);
       setOpen(false);
@@ -52,13 +50,12 @@ export const CellAction = ({ data }: CellActionProps) => {
   const onUpdate = async (data: any) => {
     try {
       setIsLoading(true);
-
       await axios.patch(`/api/${params.storeId}/orders/${data.id}`, data);
       location.reload();
       router.push(`/${params.storeId}/orders`);
-      toast.success("Order Updated");
+      toast.success("ההזמנה עודכנה");
     } catch (error) {
-      toast.error("Something Went Wrong");
+      toast.error("משהו השתבש");
     } finally {
       router.refresh();
       setIsLoading(false);
@@ -73,46 +70,70 @@ export const CellAction = ({ data }: CellActionProps) => {
         onConfirm={onDelete}
         loading={isLoading}
       />
-      <DropdownMenu>
+      <DropdownMenu dir="rtl">
         <DropdownMenuTrigger asChild>
-          <Button className="h-8 w-8 p-0" variant={"ghost"}>
-            <span className="sr-only">Open</span>
+          <Button className="h-8 w-8 p-0" variant="ghost">
+            <span className="sr-only">פתח תפריט</span>
             <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuContent align="end" className="w-[160px]">
+          <DropdownMenuLabel>פעולות</DropdownMenuLabel>
+
           <DropdownMenuItem onClick={() => onCopy(data.id)}>
-            <Copy className="h-4 w-4 mr-2" />
-            Copy Id
+            <Copy className="h-4 w-4 ml-2" />
+            העתק מס' הזמנה
           </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            onClick={() => onUpdate({ id: data.id, isPaid: true })}
+          >
+            <CreditCard className="h-4 w-4 ml-2" />
+            סמן כשולם
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={() => onUpdate({ id: data.id, isPaid: false })}
+          >
+            <CreditCard className="h-4 w-4 ml-2" />
+            סמן כלא שולם
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
 
           <DropdownMenuItem
             onClick={() =>
               onUpdate({ id: data.id, order_status: "Delivering" })
             }
           >
-            <Edit className="h-4 w-4 mr-2" />
-            Delivering
+            <Edit className="h-4 w-4 ml-2" />
+            בשליחה
           </DropdownMenuItem>
 
           <DropdownMenuItem
             onClick={() => onUpdate({ id: data.id, order_status: "Delivered" })}
           >
-            <Edit className="h-4 w-4 mr-2" />
-            Delivered
+            <Edit className="h-4 w-4 ml-2" />
+            נשלח
           </DropdownMenuItem>
 
           <DropdownMenuItem
             onClick={() => onUpdate({ id: data.id, order_status: "Canceled" })}
           >
-            <Edit className="h-4 w-4 mr-2" />
-            Cancel
+            <Edit className="h-4 w-4 ml-2" />
+            ביטול
           </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={() => setOpen(true)}>
-            <Trash className="h-4 w-4 mr-2" />
-            Delete
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            onClick={() => setOpen(true)}
+            className="text-red-600"
+          >
+            <Trash className="h-4 w-4 ml-2" />
+            מחיקה
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

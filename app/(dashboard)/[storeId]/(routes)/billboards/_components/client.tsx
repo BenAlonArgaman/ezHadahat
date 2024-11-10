@@ -20,23 +20,19 @@ export const BillboardClient = ({ data }: BillboardClientProps) => {
     <>
       <div className="flex items-center justify-between">
         <Heading
-          title={`Billboards (${data.length})`}
-          description="Manage billboards for your store"
+          title={`באנרים (${data.length})`}
+          description="נהל את הבאנרים באתר שלך"
         />
         <Button
           onClick={() => router.push(`/${params.storeId}/billboards/create`)}
         >
+          הוסף חדש
           <Plus className="h-4 w-4 mr-2" />
-          Add New
         </Button>
       </div>
 
       <Separator />
       <DataTable searchKey="label" columns={columns} data={data} />
-
-      <Heading title="API" description="API calls for billboards" />
-      <Separator />
-      <ApiList entityName="billboards" entityNameId="billboardId" />
     </>
   );
 };

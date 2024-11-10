@@ -23,17 +23,7 @@ export const PATCH = async (
       return new NextResponse("Un-Authorized", { status: 400 });
     }
 
-    const {
-      name,
-      price,
-      images,
-      isFeatured,
-      isArchived,
-      category,
-      size,
-      kitchen,
-      cuisine,
-    } = body;
+    const { name, price, images, isFeatured, isArchived, category } = body;
 
     if (!name) {
       return new NextResponse("SIze Name is missing!", { status: 400 });
@@ -79,9 +69,7 @@ export const PATCH = async (
           isFeatured,
           isArchived,
           category,
-          size,
-          kitchen,
-          cuisine,
+
           updatedAt: serverTimestamp(),
         }
       );

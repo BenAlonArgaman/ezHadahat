@@ -1,32 +1,27 @@
+// OrdersClient.tsx with RTL support
 "use client";
-
 import { Heading } from "@/components/heading";
-import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { Separator } from "@/components/ui/separator";
-import { Plus } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
 import { OrdersColumns, columns } from "./columns";
-import ApiList from "@/components/api-list";
 
 interface OrdersClientProps {
   data: OrdersColumns[];
 }
 
 export const OrdersClient = ({ data }: OrdersClientProps) => {
-  const router = useRouter();
-  const params = useParams();
   return (
-    <>
-      <div className="flex items-center justify-between">
+    <div dir="rtl" className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+      <div className="flex items-center justify-between mb-6">
         <Heading
-          title={`Orders (${data.length})`}
-          description="Manage orders for your store"
+          title={`הזמנות (${data.length})`}
+          description="ניהול הזמנות החנות שלך"
         />
       </div>
-
-      <Separator />
-      <DataTable searchKey="name" columns={columns} data={data} />
-    </>
+      <Separator className="mb-6" />
+      <div className="overflow-x-auto">
+        <DataTable searchKey="products" columns={columns} data={data} />
+      </div>
+    </div>
   );
 };

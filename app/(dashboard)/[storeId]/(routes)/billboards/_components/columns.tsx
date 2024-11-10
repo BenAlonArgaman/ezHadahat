@@ -16,7 +16,8 @@ export type BillboardColumns = {
 export const columns: ColumnDef<BillboardColumns>[] = [
   {
     accessorKey: "imageUrl",
-    header: "Image",
+
+    header: "תמונה",
     cell: ({ row }) => {
       const { imageUrl } = row.original;
       return <CellImage imageUrl={imageUrl} />;
@@ -30,7 +31,7 @@ export const columns: ColumnDef<BillboardColumns>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Name
+          שם
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -44,7 +45,7 @@ export const columns: ColumnDef<BillboardColumns>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Date
+          תאריך
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );

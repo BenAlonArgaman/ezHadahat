@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Check, X } from "lucide-react";
 import { CellAction } from "./cell-actions";
 
 export type ProductColumns = {
@@ -12,9 +12,6 @@ export type ProductColumns = {
   isFeatured: boolean;
   isArchived: boolean;
   category: string;
-  size: string;
-  kitchen: string;
-  cuisine: string;
   images: { url: string }[];
   createdAt: string;
 };
@@ -28,39 +25,62 @@ export const columns: ColumnDef<ProductColumns>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Name
+          שם
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
+    align: "right", // Add alignment property
   },
   {
     accessorKey: "price",
-    header: "Price",
+    header: "מחיר",
+    align: "right",
   },
   {
     accessorKey: "isFeatured",
-    header: "Featured",
+    header: "פופולרי",
+    align: "center",
+    cell: ({ row }) => (
+      <div className="flex items-center justify-center">
+        {row.original.isFeatured ? (
+          <div className="flex items-center gap-2 text-green-600">
+            <Check className="h-4 w-4" />
+            <span className="text-xs">פופולרי</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <X className="h-4 w-4" />
+            <span className="text-xs">רגיל</span>
+          </div>
+        )}
+      </div>
+    ),
   },
   {
     accessorKey: "isArchived",
-    header: "Archived",
+    header: "מלאי",
+    align: "center",
+    cell: ({ row }) => (
+      <div className="flex items-center justify-center">
+        {row.original.isArchived ? (
+          <div className="flex items-center gap-2 text-red-600">
+            <X className="h-4 w-4" />
+            <span className="text-xs">אזל</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 text-green-600">
+            <Check className="h-4 w-4" />
+            <span className="text-xs">במלאי</span>
+          </div>
+        )}
+      </div>
+    ),
   },
   {
     accessorKey: "category",
-    header: "Category",
-  },
-  {
-    accessorKey: "size",
-    header: "Size",
-  },
-  {
-    accessorKey: "cuisine",
-    header: "Cuisine",
-  },
-  {
-    accessorKey: "kitchen",
-    header: "Kitchen",
+    header: "קטגוריה",
+    align: "right",
   },
   {
     accessorKey: "createdAt",
@@ -70,15 +90,16 @@ export const columns: ColumnDef<ProductColumns>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Date
+          תאריך
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
+    align: "right",
   },
-
   {
     id: "actions",
+    align: "center",
     cell: ({ row }) => <CellAction data={row.original} />,
   },
 ];

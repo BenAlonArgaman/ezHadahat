@@ -1,80 +1,86 @@
+// MainNav.tsx
 "use client";
 
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  LayoutList,
+  Tags,
+  Package,
+  ShoppingCart,
+  Settings,
+} from "lucide-react";
 
 export const MainNav = ({
   className,
   ...props
-}: React.HtmlHTMLAttributes<HTMLElement>) => {
+}: React.HTMLAttributes<HTMLElement>) => {
   const pathname = usePathname();
   const params = useParams();
 
   const routes = [
     {
       href: `/${params.storeId}`,
-      label: "Overview",
+      label: "לוח בקרה",
+      icon: LayoutDashboard,
       active: pathname === `/${params.storeId}`,
     },
     {
       href: `/${params.storeId}/billboards`,
-      label: "Billboards",
+      label: "באנרים",
+      icon: LayoutList,
       active: pathname === `/${params.storeId}/billboards`,
     },
     {
       href: `/${params.storeId}/categories`,
-      label: "Categories",
+      label: "קטגוריות",
+      icon: Tags,
       active: pathname === `/${params.storeId}/categories`,
     },
     {
-      href: `/${params.storeId}/sizes`,
-      label: "Sizes",
-      active: pathname === `/${params.storeId}/sizes`,
-    },
-    {
-      href: `/${params.storeId}/kitchens`,
-      label: "Kitchens",
-      active: pathname === `/${params.storeId}/kitchens`,
-    },
-    {
-      href: `/${params.storeId}/cuisines`,
-      label: "Cuisines",
-      active: pathname === `/${params.storeId}/cuisines`,
-    },
-    {
       href: `/${params.storeId}/products`,
-      label: "Products",
+      label: "מוצרים",
+      icon: Package,
       active: pathname === `/${params.storeId}/products`,
     },
     {
       href: `/${params.storeId}/orders`,
-      label: "Orders",
+      label: "הזמנות",
+      icon: ShoppingCart,
       active: pathname === `/${params.storeId}/orders`,
-    },
-    {
-      href: `/${params.storeId}/settings`,
-      label: "Settings",
-      active: pathname === `/${params.storeId}/settings`,
     },
   ];
 
   return (
-    <nav className={cn("flex items-center space-x-4 lg:space-x-6 pl-6")}>
-      {routes.map((route) => (
-        <Link
-          key={route.href}
-          href={route.href}
-          className={cn(
-            "text-sm font-medium transition-colors hover:text-primary",
-            route.active
-              ? "text-black dark:text-white"
-              : "text-muted-foreground"
-          )}
-        >
-          {route.label}
-        </Link>
-      ))}
+    <nav
+      dir="rtl"
+      className={cn(
+        "md:flex md:items-center md:space-x-6 md:space-x-reverse",
+        className
+      )}
+      {...props}
+    >
+      {routes.map((route) => {
+        const Icon = route.icon;
+        return (
+          <Link
+            key={route.href}
+            href={route.href}
+            className={cn(
+              "flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+              "hover:bg-accent/50",
+              route.active
+                ? "text-primary bg-accent"
+                : "text-muted-foreground hover:text-primary"
+            )}
+          >
+            <Icon className="h-4 w-4" />
+            <span>{route.label}</span>
+          </Link>
+        );
+      })}
     </nav>
   );
 };

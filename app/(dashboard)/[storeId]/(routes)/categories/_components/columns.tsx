@@ -21,7 +21,7 @@ export const columns: ColumnDef<CategoryColumns>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Category
+          קטגוריה
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -35,7 +35,7 @@ export const columns: ColumnDef<CategoryColumns>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Billboard
+          באנר
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -49,7 +49,7 @@ export const columns: ColumnDef<CategoryColumns>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Date
+          תאריך
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );

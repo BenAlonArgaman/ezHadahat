@@ -65,11 +65,11 @@ export const CellAction = ({ data }: CellActionProps) => {
             <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuContent style={{ direction: "rtl" }} align="start">
+          <DropdownMenuLabel>פעולות</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => onCopy(data.id)}>
+            העתק מק״ט
             <Copy className="h-4 w-4 mr-2" />
-            Copy Id
           </DropdownMenuItem>
 
           <DropdownMenuItem
@@ -77,13 +77,13 @@ export const CellAction = ({ data }: CellActionProps) => {
               router.push(`/${params.storeId}/products/${data.id}`)
             }
           >
+            עדכון
             <Edit className="h-4 w-4 mr-2" />
-            Update
           </DropdownMenuItem>
 
           <DropdownMenuItem onClick={() => setOpen(true)}>
+            מחק
             <Trash className="h-4 w-4 mr-2" />
-            Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

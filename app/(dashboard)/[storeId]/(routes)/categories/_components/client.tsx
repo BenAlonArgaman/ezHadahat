@@ -16,27 +16,30 @@ interface CategoryClientProps {
 export const CategoryClient = ({ data }: CategoryClientProps) => {
   const router = useRouter();
   const params = useParams();
+
   return (
-    <>
-      <div className="flex items-center justify-between">
+    <div dir="rtl" className="w-full px-4 md:px-8 space-y-4 md:space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <Heading
-          title={`Categories (${data.length})`}
-          description="Manage categories for your store"
+          title={`קטגוריות (${data.length})`}
+          description="ניהול קטגוריות עבור החנות שלך"
         />
         <Button
           onClick={() => router.push(`/${params.storeId}/categories/create`)}
+          className="w-full sm:w-auto"
         >
-          <Plus className="h-4 w-4 mr-2" />
-          Add New
+          <Plus className="h-4 w-4 ml-2" />
+          הוסף קטגוריה
         </Button>
       </div>
 
-      <Separator />
-      <DataTable searchKey="name" columns={columns} data={data} />
+      <Separator className="my-4" />
 
-      <Heading title="API" description="API calls for categories" />
-      <Separator />
-      <ApiList entityName="categories" entityNameId="categoryId" />
-    </>
+      {/* Data Table */}
+      <div className="rounded-md">
+        <DataTable searchKey="name" columns={columns} data={data} />
+      </div>
+    </div>
   );
 };

@@ -29,17 +29,17 @@ export const AlertModal = ({
 
   return (
     <Modal
-      title="Are you sure ?"
-      description="This action cannot be undone!.."
+      title="?אתה בטוח שאתה רוצה למחוק"
+      description="אי אפשר לשחזר לאחר מכן"
       isOpen={isOpen}
       onClose={onClose}
     >
-      <div className="pt-6 space-x-2 flex items-center justify-end w-full">
+      <div className="pt-6 space-x-2 flex items-center justify-center w-full">
         <Button disabled={loading} variant={"outline"} onClick={onClose}>
-          Cancel
+          ביטול
         </Button>
         <Button disabled={loading} variant={"destructive"} onClick={onConfirm}>
-          Confirm
+          אישור
         </Button>
       </div>
     </Modal>

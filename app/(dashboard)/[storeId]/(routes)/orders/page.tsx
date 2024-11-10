@@ -12,12 +12,16 @@ const OrdersPage = async ({ params }: { params: { storeId: string } }) => {
     await getDocs(collection(doc(db, "stores", params.storeId), "orders"))
   ).docs.map((doc) => doc.data()) as Order[];
 
+  // In OrdersPage.tsx, update the formattedOrders mapping:
   const formattedOrders: OrdersColumns[] = ordersData.map((item) => ({
     id: item.id,
     isPaid: item.isPaid,
     phone: item.phone,
     address: item.address,
-    products: item.orderItems.map((item) => item.name).join(", "),
+    // Update this line to include quantities
+    products: item.orderItems
+      .map((item) => `${item.name} (${item.qty || 1})`)
+      .join(", "),
     order_status: item.order_status,
     totalPrice: formatter.format(
       item.orderItems.reduce((total, item) => {
@@ -29,7 +33,7 @@ const OrdersPage = async ({ params }: { params: { storeId: string } }) => {
     ),
     images: item.orderItems.map((item) => item.images[0].url),
     createdAt: item.createdAt
-      ? format(item.createdAt.toDate(), "MMMM do, yyyy")
+      ? format(item.createdAt.toDate(), "dd.MM.yy")
       : "",
   }));
 

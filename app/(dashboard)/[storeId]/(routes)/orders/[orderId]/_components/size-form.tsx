@@ -157,7 +157,7 @@ export const SizeForm = ({ initialData }: SizeFormProps) => {
           </div>
 
           <Button disabled={isLoading} type="submit" size={"sm"}>
-            Save Changes
+            שמור שינויים
           </Button>
         </form>
       </Form>

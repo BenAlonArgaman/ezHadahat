@@ -24,7 +24,7 @@ const ProductsPage = async ({ params }: { params: { storeId: string } }) => {
     kitchen: item.kitchen,
     images: item.images,
     createdAt: item.createdAt
-      ? format(item.createdAt.toDate(), "MMMM do, yyyy")
+      ? format(item.createdAt.toDate(), "dd.MM.yy")
       : "",
   }));
 

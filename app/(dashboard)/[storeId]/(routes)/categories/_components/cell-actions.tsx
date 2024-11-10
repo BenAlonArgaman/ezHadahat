@@ -40,11 +40,11 @@ export const CellAction = ({ data }: CellActionProps) => {
 
       await axios.delete(`/api/${params.storeId}/categories/${data.id}`);
 
-      toast.success("Category Removed");
+      toast.success("הקטגוריה הוסרה");
       location.reload();
       router.push(`/${params.storeId}/categories`);
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("משהו השתבש");
     } finally {
       setIsLoading(false);
       setOpen(false);
@@ -62,15 +62,15 @@ export const CellAction = ({ data }: CellActionProps) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button className="h-8 w-8 p-0" variant={"ghost"}>
-            <span className="sr-only">Open</span>
+            <span className="sr-only">פתח</span>
             <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuContent style={{ direction: "rtl" }} align="start">
+          <DropdownMenuLabel>פעולות</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => onCopy(data.id)}>
+            העתק מזהה
             <Copy className="h-4 w-4 mr-2" />
-            Copy Id
           </DropdownMenuItem>
 
           <DropdownMenuItem
@@ -78,13 +78,13 @@ export const CellAction = ({ data }: CellActionProps) => {
               router.push(`/${params.storeId}/categories/${data.id}`)
             }
           >
+            עדכון
             <Edit className="h-4 w-4 mr-2" />
-            Update
           </DropdownMenuItem>
 
           <DropdownMenuItem onClick={() => setOpen(true)}>
+            מחק
             <Trash className="h-4 w-4 mr-2" />
-            Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
